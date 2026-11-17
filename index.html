@@ -5,6 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f7f8f3">
   <title>오늘의 행운번호 | 로또 번호 추천</title>
+  <script>
+    (function () {
+      var saved = null;
+      try { saved = localStorage.getItem("theme"); } catch (e) {}
+      var theme = saved === "dark" || saved === "light"
+        ? saved
+        : (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
   <style>
     :root {
       color-scheme: light;
@@ -15,6 +25,65 @@
       --paper: #fff;
       --line: #e8ebe4;
       --background: #f7f8f3;
+      --glow: rgba(220, 235, 214, .55);
+      --panel: rgba(255, 255, 255, .76);
+      --panel-border: rgba(223, 229, 218, .9);
+      --field: #fff;
+      --button-ink: #515a51;
+      --button-hover: #f1f5ee;
+      --label: #90978e;
+      --dashed: #dce3d8;
+      --faint: #929991;
+      --toast: #26352b;
+      --shadow: rgba(37, 59, 39, .045);
+    }
+
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --ink: #e8ece6;
+      --muted: #9aa398;
+      --green: #4f9a73;
+      --green-dark: #5fae85;
+      --paper: #1c221d;
+      --line: #2c352e;
+      --background: #121613;
+      --glow: rgba(60, 110, 75, .22);
+      --panel: rgba(28, 34, 29, .8);
+      --panel-border: rgba(48, 58, 50, .9);
+      --field: #232a24;
+      --button-ink: #c9d0c7;
+      --button-hover: #2a332c;
+      --label: #7f887d;
+      --dashed: #364038;
+      --faint: #7b8479;
+      --toast: #e8ece6;
+      --shadow: rgba(0, 0, 0, .3);
+    }
+
+    :root[data-theme="dark"] .toast { color: #121613; }
+
+    .top-right { display: flex; align-items: center; gap: 12px; }
+
+    .theme-toggle {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: var(--field);
+      color: var(--ink);
+      cursor: pointer;
+      transition: background .15s ease;
+    }
+    .theme-toggle:hover { background: var(--button-hover); }
+    .theme-toggle svg { width: 18px; height: 18px; }
+    .theme-toggle .icon-sun { display: none; }
+    :root[data-theme="dark"] .theme-toggle .icon-sun { display: block; }
+    :root[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
+
+    body, .generator, .result-card, select, .copy-button {
+      transition: background-color .2s ease, border-color .2s ease, color .2s ease;
     }
 
     * { box-sizing: border-box; }
@@ -24,7 +93,7 @@
       min-width: 320px;
       min-height: 100vh;
       background:
-        radial-gradient(ellipse at 50% 0, rgba(220, 235, 214, .55), transparent 38rem),
+        radial-gradient(ellipse at 50% 0, var(--glow), transparent 38rem),
         var(--background);
       color: var(--ink);
       font-family: Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
@@ -109,10 +178,10 @@
 
     .generator {
       padding: 25px 28px;
-      border: 1px solid rgba(223, 229, 218, .9);
+      border: 1px solid var(--panel-border);
       border-radius: 20px;
-      background: rgba(255, 255, 255, .76);
-      box-shadow: 0 12px 36px rgba(37, 59, 39, .045);
+      background: var(--panel);
+      box-shadow: 0 12px 36px var(--shadow);
     }
 
     .controls {
@@ -138,7 +207,7 @@
       appearance: none;
       border: 1px solid var(--line);
       border-radius: 10px;
-      background: #fff;
+      background: var(--field);
       color: var(--ink);
       cursor: pointer;
       font-size: 14px;
@@ -201,15 +270,15 @@
       padding: 8px 11px;
       border: 1px solid var(--line);
       border-radius: 9px;
-      background: #fff;
-      color: #515a51;
+      background: var(--field);
+      color: var(--button-ink);
       cursor: pointer;
       font-size: 12px;
       font-weight: 700;
       transition: background .15s ease;
     }
 
-    .copy-button:hover { background: #f1f5ee; }
+    .copy-button:hover { background: var(--button-hover); }
     .copy-button:disabled { cursor: default; opacity: .48; }
 
     .results { display: grid; gap: 10px; }
@@ -223,13 +292,13 @@
       border: 1px solid var(--line);
       border-radius: 15px;
       background: var(--paper);
-      box-shadow: 0 3px 12px rgba(37, 59, 39, .025);
+      box-shadow: 0 3px 12px var(--shadow);
       animation: appear .32s ease both;
     }
 
     .set-label {
       flex: 0 0 44px;
-      color: #90978e;
+      color: var(--label);
       font-size: 12px;
       font-weight: 700;
     }
@@ -263,7 +332,7 @@
 
     .empty-state {
       padding: 33px 20px;
-      border: 1px dashed #dce3d8;
+      border: 1px dashed var(--dashed);
       border-radius: 15px;
       color: var(--muted);
       text-align: center;
@@ -272,7 +341,7 @@
 
     .disclaimer {
       margin: 23px 4px 0;
-      color: #929991;
+      color: var(--faint);
       font-size: 12px;
       line-height: 1.7;
       text-align: center;
@@ -288,7 +357,7 @@
       margin: auto;
       padding: 12px 17px;
       border-radius: 12px;
-      background: #26352b;
+      background: var(--toast);
       color: white;
       font-size: 13px;
       opacity: 0;
@@ -328,7 +397,18 @@
   <main class="page">
     <header class="topbar">
       <div class="brand"><span class="brand-mark" aria-hidden="true">🍀</span> 오늘의 행운번호</div>
-      <span class="top-note">가볍게 즐기는 행운 한 장</span>
+      <div class="top-right">
+        <span class="top-note">가볍게 즐기는 행운 한 장</span>
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="다크 모드로 전환">
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+          </svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.8"/>
+            <path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
     </header>
 
     <section class="intro" aria-labelledby="page-title">
@@ -382,8 +462,34 @@
     const countSelect = document.querySelector("#set-count");
     const copyButton = document.querySelector("#copy");
     const toast = document.querySelector("#toast");
+    const themeToggle = document.querySelector("#theme-toggle");
+    const themeMeta = document.querySelector('meta[name="theme-color"]');
     let generatedSets = [];
     let toastTimer;
+
+    function applyTheme(theme, save) {
+      document.documentElement.setAttribute("data-theme", theme);
+      themeMeta.setAttribute("content", theme === "dark" ? "#121613" : "#f7f8f3");
+      themeToggle.setAttribute("aria-label", theme === "dark" ? "라이트 모드로 전환" : "다크 모드로 전환");
+      if (save) {
+        try { localStorage.setItem("theme", theme); } catch (e) {}
+      }
+    }
+
+    applyTheme(document.documentElement.getAttribute("data-theme") || "light", false);
+
+    themeToggle.addEventListener("click", () => {
+      const next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+      applyTheme(next, true);
+    });
+
+    if (window.matchMedia) {
+      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (event) => {
+        let saved = null;
+        try { saved = localStorage.getItem("theme"); } catch (e) {}
+        if (!saved) applyTheme(event.matches ? "dark" : "light", false);
+      });
+    }
 
     function randomNumber(max) {
       if (window.crypto && window.crypto.getRandomValues) {
